@@ -29,46 +29,46 @@ double* remove_inaccuracy(double* data)
 }
 
 
-void gen_files(string& directory, int n)
+void gen_datas(string& file, int n)
 {
-	_mkdir(directory.c_str());
+	ofstream f(file);
 	for (int i = 0; i < n; i++)
 	{
-		ofstream f(directory + "n" + to_string(i + 1) + ".txt");
 		for (int j = 0; j < 24; j++)
 		{
 			//генерация давления от 0.3 до 6 бар
 			f << rand() % 57 / 10. + 0.3 << " ";
 		}
-		cout << "Сгенерирован " << i + 1 << "/" << n << " файлов\n";
-		f.close();
+		f << "\n";
+		cout << "Сгенерировано " << i + 1 << "/" << n << " данных\n";
 	}
+	f.close();
 }
 
 
-double** read_datas(string& directory, int n)
+double** read_datas(string& file, int n)
 {
+	ifstream f(file);
+	f.peek();
+	if (!f.good())
+	{
+		return nullptr;
+	}
+
 	double** datas = new double*[n];
 
 	for (int i = 0; i < n; i++)
 	{
-		ifstream f(directory + "n" + to_string(i + 1) + ".txt");
-		f.peek();
-		if (!f.good())
-		{
-			return nullptr;
-		}
 		double* data = new double[24];
 		for (int j = 0; j < 24; ++j)
 		{
 			f >> data[j];
 		}
-		f.close();
 		datas[i] = data;
 
-		cout << "Считано " << i + 1 << "/" << n << " файлов\n";
-		f.close();
+		cout << "Считано " << i + 1 << "/" << n << " данных\n";
 	}
+	f.close();
 	return datas;
 }
 
@@ -77,7 +77,7 @@ int main()
 	setlocale(LC_ALL, "russian");
 	cout << "Автор: Никитина Дарья Сергеевна\n";
 
-	string directory = "data/";
+	string file_name = "file.txt";
 
 	int n;
 	cout << "Введите количество датчиков: ";
@@ -89,11 +89,11 @@ int main()
 
 	if (k == 1)
 	{
-		gen_files(directory, n);
+		gen_datas(file_name, n);
 	}
 	else if (k == 2)
 	{
-		double** datas = read_datas(directory, n);
+		double** datas = read_datas(file_name, n);
 		if (datas == nullptr)
 		{
 			cout << "Возникла ошибка при считывании файлов!\nПроверьте их наличие и количество!\n";
